@@ -24,14 +24,14 @@ export default function PortfolioPage() {
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold">{t('portfolio:title')}</h1>
         <div className="flex gap-2">
-          <Button onClick={() => setShowImportDialog(true)} variant="outline">
+          <Button onClick={() => setShowImportDialog(true)} variant="outline" size="sm">
             {t('portfolio:import_csv')}
           </Button>
-          <Button onClick={() => setShowAddForm(true)}>{t('portfolio:add_asset')}</Button>
+          <Button onClick={() => setShowAddForm(true)} size="sm">{t('portfolio:add_asset')}</Button>
         </div>
       </div>
 
-      <PortfolioDashboard key={refreshKey} />
+      <PortfolioDashboard key={refreshKey} onRefresh={() => setRefreshKey((prev) => prev + 1)} />
 
       {showAddForm && (
         <AddAssetForm onSuccess={handleSuccess} onCancel={() => setShowAddForm(false)} />

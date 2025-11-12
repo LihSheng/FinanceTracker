@@ -14,13 +14,20 @@ interface PriceSyncButtonProps {
   assetIds?: string[];
   onSyncComplete?: (result: PriceSyncResult) => void;
   className?: string;
+  size?: 'sm' | 'md' | 'lg';
 }
 
 export function PriceSyncButton({
   assetIds,
   onSyncComplete,
   className = '',
+  size = 'md',
 }: PriceSyncButtonProps) {
+  const sizeClasses = {
+    sm: 'px-3 py-1.5 text-xs',
+    md: 'px-4 py-2 text-sm',
+    lg: 'px-5 py-2.5 text-base',
+  };
   const [isSyncing, setIsSyncing] = useState(false);
   const [lastSync, setLastSync] = useState<Date | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -66,7 +73,7 @@ export function PriceSyncButton({
         <button
           onClick={handleSync}
           disabled={isSyncing}
-          className="flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+          className={`flex items-center gap-2 rounded-lg bg-blue-600 font-medium text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50 ${sizeClasses[size]}`}
         >
           {isSyncing ? (
             <>

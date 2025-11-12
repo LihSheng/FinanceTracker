@@ -5,6 +5,8 @@
   "delete_asset": "Delete Asset",
   "import_csv": "Import CSV",
   "no_assets": "No assets yet",
+  "no_assets_description": "Add your first asset to get started.",
+  "assets": "Assets",
   "platform": "Platform",
   "asset_type": "Asset Type",
   "ticker": "Ticker/Symbol",
@@ -19,6 +21,17 @@
   "current_value": "Current Value",
   "invested_value": "Invested Value",
   "unrealized_gain": "P/L",
+  "summary": {
+    "net_worth": "Net Worth",
+    "invested_capital": "Invested Capital",
+    "unrealized_pl": "Unrealized P/L",
+    "return": "Return"
+  },
+  "breakdown": {
+    "asset_class": "Asset Class",
+    "currency_exposure": "Currency Exposure",
+    "platform_distribution": "Platform Distribution"
+  },
   "asset_types": {
     "stock": "Stock",
     "crypto": "Cryptocurrency",
