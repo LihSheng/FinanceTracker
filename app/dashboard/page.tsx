@@ -1,11 +1,15 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
+import ExportButton from '@/components/ExportButton';
 
 export default function DashboardPage() {
   return (
     <div className="p-6">
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
-        <p className="text-gray-600 mt-1">Welcome to your Finance Tracker</p>
+      <div className="mb-6 flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
+          <p className="text-gray-600 mt-1">Welcome to your Finance Tracker</p>
+        </div>
+        <ExportButton />
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
