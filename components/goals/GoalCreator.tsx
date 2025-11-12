@@ -14,7 +14,7 @@ const goalSchema = z.object({
   targetAmount: z.string().min(1, 'Target amount is required'),
   currentAmount: z.string().optional(),
   currency: z.enum(['MYR', 'SGD', 'USD']),
-  targetDate: z.date().optional(),
+  targetDate: z.string().optional(),
   monthlyContribution: z.string().optional(),
   expectedReturn: z.string().optional(),
 });
@@ -58,7 +58,7 @@ export function GoalCreator({
       targetAmount: initialData?.targetAmount?.toString() || '',
       currentAmount: initialData?.currentAmount?.toString() || '0',
       currency: initialData?.currency || 'MYR',
-      targetDate: initialData?.targetDate ? new Date(initialData.targetDate) : undefined,
+      targetDate: initialData?.targetDate ? new Date(initialData.targetDate).toISOString().split('T')[0] : '',
       monthlyContribution: initialData?.monthlyContribution?.toString() || '',
       expectedReturn: initialData?.expectedReturn?.toString() || '',
     },
@@ -73,7 +73,7 @@ export function GoalCreator({
         targetAmount: parseFloat(data.targetAmount),
         currentAmount: data.currentAmount ? parseFloat(data.currentAmount) : 0,
         currency: data.currency,
-        targetDate: data.targetDate?.toISOString(),
+        targetDate: data.targetDate ? new Date(data.targetDate).toISOString() : null,
         monthlyContribution: data.monthlyContribution ? parseFloat(data.monthlyContribution) : null,
         expectedReturn: data.expectedReturn ? parseFloat(data.expectedReturn) : null,
       };

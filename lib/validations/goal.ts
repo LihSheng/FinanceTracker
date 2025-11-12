@@ -6,9 +6,9 @@ export const createGoalSchema = z.object({
   targetAmount: z.number().positive('Target amount must be positive'),
   currentAmount: z.number().min(0, 'Current amount cannot be negative').optional().default(0),
   currency: z.enum(['MYR', 'SGD', 'USD']).default('MYR'),
-  targetDate: z.string().datetime().optional(),
-  monthlyContribution: z.number().positive('Monthly contribution must be positive').optional(),
-  expectedReturn: z.number().min(0).max(100, 'Expected return must be between 0 and 100').optional(),
+  targetDate: z.string().datetime().optional().nullable(),
+  monthlyContribution: z.number().positive('Monthly contribution must be positive').optional().nullable(),
+  expectedReturn: z.number().min(0).max(100, 'Expected return must be between 0 and 100').optional().nullable(),
 });
 
 export const updateGoalSchema = z.object({
