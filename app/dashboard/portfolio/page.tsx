@@ -1,12 +1,14 @@
 'use client';
 
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import PortfolioDashboard from '@/components/portfolio/PortfolioDashboard';
 import AddAssetForm from '@/components/portfolio/AddAssetForm';
 import CSVImportDialog from '@/components/portfolio/CSVImportDialog';
 import Button from '@/components/ui/Button';
 
 export default function PortfolioPage() {
+  const { t } = useTranslation(['portfolio', 'common']);
   const [showAddForm, setShowAddForm] = useState(false);
   const [showImportDialog, setShowImportDialog] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
@@ -20,12 +22,12 @@ export default function PortfolioPage() {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold">Portfolio</h1>
+        <h1 className="text-3xl font-bold">{t('portfolio:title')}</h1>
         <div className="flex gap-2">
           <Button onClick={() => setShowImportDialog(true)} variant="outline">
-            Import CSV
+            {t('portfolio:import_csv')}
           </Button>
-          <Button onClick={() => setShowAddForm(true)}>Add Asset</Button>
+          <Button onClick={() => setShowAddForm(true)}>{t('portfolio:add_asset')}</Button>
         </div>
       </div>
 

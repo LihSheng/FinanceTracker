@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { format } from 'date-fns';
+import { useTranslation } from 'react-i18next';
 import { Trash2, Edit, Plus, TrendingUp, Calendar, Target } from 'lucide-react';
 import Button from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
@@ -38,15 +39,16 @@ export function GoalCard({
   onAddContribution,
   onViewDetails,
 }: GoalCardProps) {
+  const { t } = useTranslation(['goals', 'common']);
   const { confirm, isOpen, options, handleConfirm, handleCancel } = useConfirm();
   const [isDeleting, setIsDeleting] = useState(false);
 
   const handleDelete = async () => {
     const confirmed = await confirm({
-      title: 'Delete Goal',
-      message: `Are you sure you want to delete "${goal.name}"? This action cannot be undone.`,
-      confirmText: 'Delete',
-      cancelText: 'Cancel',
+      title: t('goals:confirm.delete_title'),
+      message: t('goals:confirm.delete_message', { name: goal.name }),
+      confirmText: t('common:delete'),
+      cancelText: t('common:cancel'),
       variant: 'danger',
     });
 
@@ -77,7 +79,7 @@ export function GoalCard({
             <p className="text-sm text-muted-foreground mt-1">{goal.category}</p>
           </div>
           <Badge variant={goal.isOnTrack ? 'default' : 'destructive'}>
-            {goal.isOnTrack ? 'On Track' : 'Behind'}
+            {goal.isOnTrack ? t('goals:on_track') : t('goals:behind')}
           </Badge>
         </div>
       </CardHeader>
@@ -85,7 +87,7 @@ export function GoalCard({
         {/* Progress Bar */}
         <div className="space-y-2">
           <div className="flex justify-between text-sm">
-            <span className="font-medium">Progress</span>
+            <span className="font-medium">{t('goals:progress')}</span>
             <span className="text-muted-foreground">{goal.progressPercent}%</span>
           </div>
           <Progress value={goal.progressPercent} className="h-2" />
@@ -111,11 +113,11 @@ export function GoalCard({
         {/* Amounts */}
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <p className="text-xs text-muted-foreground">Current</p>
+            <p className="text-xs text-muted-foreground">{t('goals:current_amount')}</p>
             <p className="text-sm font-semibold">{formatCurrency(goal.currentAmount)}</p>
           </div>
           <div>
-            <p className="text-xs text-muted-foreground">Target</p>
+            <p className="text-xs text-muted-foreground">{t('goals:target_amount')}</p>
             <p className="text-sm font-semibold">{formatCurrency(goal.targetAmount)}</p>
           </div>
         </div>
@@ -123,7 +125,7 @@ export function GoalCard({
         {/* Remaining Amount */}
         <div className="flex items-center gap-2 text-sm">
           <Target className="h-4 w-4 text-muted-foreground" />
-          <span className="text-muted-foreground">Remaining:</span>
+          <span className="text-muted-foreground">{t('goals:remaining')}:</span>
           <span className="font-medium">{formatCurrency(goal.remainingAmount)}</span>
         </div>
 
@@ -131,7 +133,7 @@ export function GoalCard({
         {goal.targetDate && (
           <div className="flex items-center gap-2 text-sm">
             <Calendar className="h-4 w-4 text-muted-foreground" />
-            <span className="text-muted-foreground">Target:</span>
+            <span className="text-muted-foreground">{t('goals:target_date')}:</span>
             <span className="font-medium">
               {format(new Date(goal.targetDate), 'MMM dd, yyyy')}
             </span>
@@ -147,7 +149,7 @@ export function GoalCard({
         {goal.projectedCompletionDate && (
           <div className="flex items-center gap-2 text-sm">
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
-            <span className="text-muted-foreground">Projected:</span>
+            <span className="text-muted-foreground">{t('goals:projected')}:</span>
             <span className="font-medium">
               {format(new Date(goal.projectedCompletionDate), 'MMM dd, yyyy')}
             </span>
@@ -162,7 +164,7 @@ export function GoalCard({
             className="flex-1"
             onClick={() => onViewDetails(goal.id)}
           >
-            View Details
+            {t('common:view_details')}
           </Button>
           <Button
             variant="primary"

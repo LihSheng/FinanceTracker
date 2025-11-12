@@ -3,6 +3,8 @@
   "mark_all_read": "Mark All as Read",
   "mark_as_read": "Mark as Read",
   "no_notifications": "No notifications",
+  "no_unread": "You have no unread notifications.",
+  "no_notifications_yet": "You have no notifications yet.",
   "unread": "Unread",
   "messages": {
     "marked_read": "Notification marked as read",

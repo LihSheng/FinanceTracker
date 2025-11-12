@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Alert } from '@/types';
 import Button from '@/components/ui/Button';
 import Badge from '@/components/ui/Badge';
@@ -10,6 +11,7 @@ import { useConfirm } from '@/hooks/useConfirm';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 
 export default function AlertCenter() {
+  const { t } = useTranslation(['alerts', 'common']);
   const { confirm, isOpen, options, handleConfirm, handleCancel } = useConfirm();
   const [alerts, setAlerts] = useState<Alert[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -30,8 +32,8 @@ export default function AlertCenter() {
         setAlerts(data);
       } else {
         toast({
-          title: 'Error',
-          description: 'Failed to fetch alerts',
+          title: t('common:error'),
+          description: t('alerts:messages.load_failed'),
           variant: 'destructive',
         });
       }
@@ -57,14 +59,14 @@ export default function AlertCenter() {
 
       if (response.ok) {
         toast({
-          title: 'Success',
-          description: 'Alert created successfully',
+          title: t('common:success'),
+          description: t('alerts:messages.created'),
         });
         fetchAlerts();
       } else {
         toast({
-          title: 'Error',
-          description: 'Failed to create alert',
+          title: t('common:error'),
+          description: t('alerts:messages.create_failed'),
           variant: 'destructive',
         });
       }
@@ -90,15 +92,15 @@ export default function AlertCenter() {
 
       if (response.ok) {
         toast({
-          title: 'Success',
-          description: 'Alert updated successfully',
+          title: t('common:success'),
+          description: t('alerts:messages.updated'),
         });
         fetchAlerts();
         setEditingAlert(undefined);
       } else {
         toast({
-          title: 'Error',
-          description: 'Failed to update alert',
+          title: t('common:error'),
+          description: t('alerts:messages.update_failed'),
           variant: 'destructive',
         });
       }
@@ -114,10 +116,10 @@ export default function AlertCenter() {
 
   const handleDeleteAlert = async (id: string) => {
     const confirmed = await confirm({
-      title: 'Delete Alert',
-      message: 'Are you sure you want to delete this alert? This action cannot be undone.',
-      confirmText: 'Delete',
-      cancelText: 'Cancel',
+      title: t('alerts:confirm.delete_title'),
+      message: t('alerts:confirm.delete_message'),
+      confirmText: t('common:delete'),
+      cancelText: t('common:cancel'),
       variant: 'danger',
     });
 
@@ -130,14 +132,14 @@ export default function AlertCenter() {
 
       if (response.ok) {
         toast({
-          title: 'Success',
-          description: 'Alert deleted successfully',
+          title: t('common:success'),
+          description: t('alerts:messages.deleted'),
         });
         fetchAlerts();
       } else {
         toast({
-          title: 'Error',
-          description: 'Failed to delete alert',
+          title: t('common:error'),
+          description: t('alerts:messages.delete_failed'),
           variant: 'destructive',
         });
       }
@@ -207,14 +209,14 @@ export default function AlertCenter() {
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold text-gray-900">Alert Center</h2>
+        <h2 className="text-2xl font-bold text-gray-900">{t('alerts:title')}</h2>
         <Button
           onClick={() => {
             setEditingAlert(undefined);
             setIsDialogOpen(true);
           }}
         >
-          Create Alert
+          {t('alerts:create_alert')}
         </Button>
       </div>
 
@@ -233,9 +235,9 @@ export default function AlertCenter() {
               d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
             />
           </svg>
-          <h3 className="mt-2 text-sm font-medium text-gray-900">No alerts</h3>
+          <h3 className="mt-2 text-sm font-medium text-gray-900">{t('alerts:no_alerts')}</h3>
           <p className="mt-1 text-sm text-gray-500">
-            Get started by creating a new alert.
+            {t('alerts:no_alerts_description')}
           </p>
         </div>
       ) : (
@@ -252,9 +254,9 @@ export default function AlertCenter() {
                       {getAlertTypeLabel(alert.type)}
                     </Badge>
                     {alert.isActive ? (
-                      <Badge variant="default">Active</Badge>
+                      <Badge variant="default">{t('alerts:active')}</Badge>
                     ) : (
-                      <Badge variant="secondary">Inactive</Badge>
+                      <Badge variant="secondary">{t('alerts:inactive')}</Badge>
                     )}
                   </div>
                   <p className="text-sm text-gray-900 font-medium">
@@ -262,7 +264,7 @@ export default function AlertCenter() {
                   </p>
                   {alert.lastTriggered && (
                     <p className="text-xs text-gray-500 mt-1">
-                      Last triggered:{' '}
+                      {t('alerts:last_triggered')}:{' '}
                       {new Date(alert.lastTriggered).toLocaleString()}
                     </p>
                   )}
@@ -272,7 +274,7 @@ export default function AlertCenter() {
                     onClick={() => toggleAlertStatus(alert)}
                     className="text-sm text-blue-600 hover:text-blue-800"
                   >
-                    {alert.isActive ? 'Deactivate' : 'Activate'}
+                    {alert.isActive ? t('alerts:deactivate') : t('alerts:activate')}
                   </button>
                   <button
                     onClick={() => {
@@ -281,13 +283,13 @@ export default function AlertCenter() {
                     }}
                     className="text-sm text-gray-600 hover:text-gray-800"
                   >
-                    Edit
+                    {t('common:edit')}
                   </button>
                   <button
                     onClick={() => handleDeleteAlert(alert.id)}
                     className="text-sm text-red-600 hover:text-red-800"
                   >
-                    Delete
+                    {t('common:delete')}
                   </button>
                 </div>
               </div>

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import TransactionForm from '@/components/transactions/TransactionForm';
 import TransactionList from '@/components/transactions/TransactionList';
 import TransactionFilters from '@/components/transactions/TransactionFilters';
@@ -9,6 +10,7 @@ import Button from '@/components/ui/Button';
 import { useToastContext } from '@/contexts/ToastContext';
 
 export default function TransactionsPage() {
+  const { t } = useTranslation(['transactions', 'common']);
   const { success, error } = useToastContext();
   const [transactions, setTransactions] = useState([]);
   const [summary, setSummary] = useState({
@@ -47,7 +49,7 @@ export default function TransactionsPage() {
       setPagination(data.pagination);
     } catch (err) {
       console.error('Error fetching transactions:', err);
-      error('Failed to load transactions');
+      error(t('transactions:messages.load_failed'));
     } finally {
       setIsLoading(false);
     }
@@ -63,7 +65,7 @@ export default function TransactionsPage() {
       setSummary(data);
     } catch (err) {
       console.error('Error fetching summary:', err);
-      error('Failed to load summary');
+      error(t('transactions:messages.load_failed'));
     }
   }, [filters]);
 
@@ -82,7 +84,7 @@ export default function TransactionsPage() {
       setCategories(allCategories);
     } catch (err) {
       console.error('Error fetching categories:', err);
-      error('Failed to load categories');
+      error(t('common:errors.generic'));
     }
   };
 
@@ -122,12 +124,12 @@ export default function TransactionsPage() {
 
       if (!response.ok) throw new Error('Failed to delete transaction');
 
-      success('Transaction deleted successfully');
+      success(t('transactions:messages.deleted'));
       fetchTransactions();
       fetchSummary();
     } catch (err) {
       console.error('Error deleting transaction:', err);
-      error('Failed to delete transaction');
+      error(t('transactions:messages.delete_failed'));
     }
   };
 
@@ -140,10 +142,10 @@ export default function TransactionsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Transactions</h1>
-          <p className="text-gray-600 mt-1">Track your income and expenses</p>
+          <h1 className="text-3xl font-bold text-gray-900">{t('transactions:title')}</h1>
+          <p className="text-gray-600 mt-1">{t('transactions:subtitle')}</p>
         </div>
-        <Button onClick={handleAddTransaction}>+ Add Transaction</Button>
+        <Button onClick={handleAddTransaction}>+ {t('transactions:add_transaction')}</Button>
       </div>
 
       <TransactionSummary

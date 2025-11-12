@@ -1,11 +1,13 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Notification } from '@/types';
 import Badge from '@/components/ui/Badge';
 import Button from '@/components/ui/Button';
 
 export default function NotificationsPage() {
+  const { t } = useTranslation(['notifications', 'common']);
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [filter, setFilter] = useState<'all' | 'unread'>('all');
@@ -78,6 +80,7 @@ export default function NotificationsPage() {
     return (
       <div className="flex justify-center items-center py-12">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+        <p className="ml-3">{t('common:loading')}</p>
       </div>
     );
   }
@@ -86,24 +89,24 @@ export default function NotificationsPage() {
     <div className="container mx-auto px-4 py-8">
       <div className="space-y-4">
         <div className="flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-gray-900">Notifications</h1>
+          <h1 className="text-2xl font-bold text-gray-900">{t('notifications:title')}</h1>
           <div className="flex gap-2">
             <Button
               variant={filter === 'all' ? 'primary' : 'outline'}
               size="sm"
               onClick={() => setFilter('all')}
             >
-              All
+              {t('common:filter')}
             </Button>
             <Button
               variant={filter === 'unread' ? 'primary' : 'outline'}
               size="sm"
               onClick={() => setFilter('unread')}
             >
-              Unread
+              {t('notifications:unread')}
             </Button>
             <Button variant="outline" size="sm" onClick={markAllAsRead}>
-              Mark All Read
+              {t('notifications:mark_all_read')}
             </Button>
           </div>
         </div>
@@ -124,12 +127,12 @@ export default function NotificationsPage() {
               />
             </svg>
             <h3 className="mt-2 text-sm font-medium text-gray-900">
-              No notifications
+              {t('notifications:no_notifications')}
             </h3>
             <p className="mt-1 text-sm text-gray-500">
               {filter === 'unread'
-                ? 'You have no unread notifications.'
-                : 'You have no notifications yet.'}
+                ? t('notifications:no_unread')
+                : t('notifications:no_notifications_yet')}
             </p>
           </div>
         ) : (
@@ -167,7 +170,7 @@ export default function NotificationsPage() {
                       size="sm"
                       onClick={() => markAsRead(notification.id)}
                     >
-                      Mark as read
+                      {t('notifications:mark_as_read')}
                     </Button>
                   )}
                 </div>
