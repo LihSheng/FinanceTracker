@@ -78,6 +78,23 @@ export function GoalCard({
             <span className="text-muted-foreground">{goal.progressPercent}%</span>
           </div>
           <Progress value={goal.progressPercent} className="h-2" />
+          
+          {/* Milestone Indicators */}
+          <div className="flex justify-between pt-1">
+            {[25, 50, 75, 100].map((milestone) => {
+              const isReached = goal.progressPercent >= milestone;
+              return (
+                <div
+                  key={milestone}
+                  className={`text-xs ${
+                    isReached ? 'text-primary font-medium' : 'text-muted-foreground'
+                  }`}
+                >
+                  {milestone === goal.progressPercent && '●'}
+                </div>
+              );
+            })}
+          </div>
         </div>
 
         {/* Amounts */}

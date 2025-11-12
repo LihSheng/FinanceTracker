@@ -100,6 +100,33 @@ export function GoalDetailView({
               <span className="text-muted-foreground">{goal.progressPercent}%</span>
             </div>
             <Progress value={goal.progressPercent} className="h-3" />
+            
+            {/* Milestone Markers */}
+            <div className="relative pt-4">
+              <div className="flex justify-between text-xs text-muted-foreground">
+                {[25, 50, 75, 100].map((milestone) => {
+                  const isReached = goal.progressPercent >= milestone;
+                  return (
+                    <div
+                      key={milestone}
+                      className="flex flex-col items-center"
+                      style={{ width: '25%' }}
+                    >
+                      <div
+                        className={`w-3 h-3 rounded-full border-2 mb-1 ${
+                          isReached
+                            ? 'bg-primary border-primary'
+                            : 'bg-background border-muted-foreground'
+                        }`}
+                      />
+                      <span className={isReached ? 'font-medium text-primary' : ''}>
+                        {milestone}%
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">

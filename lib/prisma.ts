@@ -1,9 +1,4 @@
-import { config } from 'dotenv'
 import { PrismaClient } from '@prisma/client'
-
-// Load environment variables
-config({ path: '.env.local' })
-config()
 
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined
