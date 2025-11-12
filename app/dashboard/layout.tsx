@@ -14,6 +14,7 @@ export default function DashboardLayout({
 }) {
   const { data: session, status } = useSession();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
   if (status === 'loading') {
     return null;
@@ -27,14 +28,16 @@ export default function DashboardLayout({
     <div className="flex h-screen bg-gray-50">
       <Sidebar 
         isOpen={isSidebarOpen} 
-        onClose={() => setIsSidebarOpen(false)} 
+        onClose={() => setIsSidebarOpen(false)}
+        isCollapsed={isSidebarCollapsed}
+        onToggleCollapse={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
       />
       <div className="flex flex-col flex-1 overflow-hidden">
         <Header 
           userName={session.user?.name || undefined}
           onMenuClick={() => setIsSidebarOpen(true)}
         />
-        <main className="flex-1 overflow-y-auto">
+        <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
           <ErrorBoundary>
             {children}
           </ErrorBoundary>
