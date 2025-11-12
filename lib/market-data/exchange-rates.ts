@@ -1,35 +1,42 @@
 /**
  * Exchange Rate API integration for currency conversion
  * 
+ * TODO: TEMPORARY - Currently using dummy exchange rates for development
+ * TODO: Re-enable API integration when endpoints are configured
+ * 
  * Primary: Bank Negara Malaysia (BNM) API - https://api.bnm.gov.my/public/exchange-rate
  *   - Free, no API key required
  *   - Provides official MYR exchange rates
  *   - Updated daily by Bank Negara Malaysia
  *   - Includes buying, middle, and selling rates
+ *   - STATUS: Temporarily disabled - endpoint needs verification
  * 
  * Fallback: ExchangeRate-API - https://www.exchangerate-api.com/
  *   - Used for non-MYR conversions or if BNM API is unavailable
  *   - Requires API key (set EXCHANGE_RATE_API_KEY in .env)
  *   - Provides historical rates
+ *   - STATUS: Temporarily disabled - needs valid API key
  */
 
 interface BNMRateData {
   currency_code: string;
-  currency: string;
+  unit: number;
   rate: {
-    buying_rate: number;
+    date: string;
+    buying_rate: number | null;
     middle_rate: number;
-    selling_rate: number;
+    selling_rate: number | null;
   };
-  date: string;
 }
 
 interface BNMAPIResponse {
-  meta: {
-    last_updated: string;
-    next_update: string;
-  };
   data: BNMRateData[];
+  meta: {
+    quote: string;
+    session: string;
+    last_updated: string;
+    total_result: number;
+  };
 }
 
 interface ExchangeRateAPIResponse {
@@ -84,10 +91,25 @@ export class ExchangeRateService {
     }
 
     try {
-      const response = await fetch(this.bnmBaseUrl);
+      // Try with today's date first
+      const today = new Date().toISOString().split('T')[0];
+      let response = await fetch(`${this.bnmBaseUrl}/${today}`, {
+        headers: {
+          'Accept': 'application/json',
+        },
+      });
+
+      // If that fails, try without date
+      if (!response.ok) {
+        response = await fetch(this.bnmBaseUrl, {
+          headers: {
+            'Accept': 'application/json',
+          },
+        });
+      }
 
       if (!response.ok) {
-        console.error(`BNM API error: ${response.status}`);
+        console.warn(`BNM API unavailable (status ${response.status}), using fallback`);
         return null;
       }
 
@@ -106,13 +128,63 @@ export class ExchangeRateService {
 
       return data.data;
     } catch (error) {
-      console.error('Error fetching BNM rates:', error);
+      console.warn('BNM API error, using fallback:', error);
       return null;
     }
   }
 
   /**
+   * TODO: Temporary dummy rates for development
+   * Replace with actual API integration
+   */
+  private getDummyRate(fromCurrency: string, toCurrency: string): number | null {
+    // Approximate exchange rates (as of Nov 2024)
+    const ratesFromMYR: Record<string, number> = {
+      MYR: 1,
+      USD: 0.224,    // 1 MYR ≈ 0.224 USD
+      SGD: 0.301,    // 1 MYR ≈ 0.301 SGD
+      EUR: 0.206,    // 1 MYR ≈ 0.206 EUR
+      GBP: 0.176,    // 1 MYR ≈ 0.176 GBP
+      JPY: 33.5,     // 1 MYR ≈ 33.5 JPY
+      AUD: 0.344,    // 1 MYR ≈ 0.344 AUD
+      CAD: 0.312,    // 1 MYR ≈ 0.312 CAD
+      CHF: 0.197,    // 1 MYR ≈ 0.197 CHF
+      CNY: 1.62,     // 1 MYR ≈ 1.62 CNY
+      HKD: 1.75,     // 1 MYR ≈ 1.75 HKD
+      INR: 18.8,     // 1 MYR ≈ 18.8 INR
+      IDR: 3550,     // 1 MYR ≈ 3550 IDR
+      KRW: 305,      // 1 MYR ≈ 305 KRW
+      THB: 7.8,      // 1 MYR ≈ 7.8 THB
+      PHP: 13.2,     // 1 MYR ≈ 13.2 PHP
+      NZD: 0.377,    // 1 MYR ≈ 0.377 NZD
+      TWD: 7.2,      // 1 MYR ≈ 7.2 TWD
+      VND: 5700,     // 1 MYR ≈ 5700 VND
+    };
+
+    // If converting from MYR
+    if (fromCurrency === 'MYR' && ratesFromMYR[toCurrency]) {
+      return ratesFromMYR[toCurrency];
+    }
+
+    // If converting to MYR
+    if (toCurrency === 'MYR' && ratesFromMYR[fromCurrency]) {
+      return 1 / ratesFromMYR[fromCurrency];
+    }
+
+    // Cross rate via MYR
+    if (ratesFromMYR[fromCurrency] && ratesFromMYR[toCurrency]) {
+      const fromToMYR = 1 / ratesFromMYR[fromCurrency];
+      const myrToTarget = ratesFromMYR[toCurrency];
+      return fromToMYR * myrToTarget;
+    }
+
+    return null;
+  }
+
+  /**
    * Get rate from BNM data
+   * BNM rates show how much MYR you get for the foreign currency unit
+   * For example: USD rate of 4.1305 means 1 USD = 4.1305 MYR
    */
   private getBNMRate(
     fromCurrency: string,
@@ -124,24 +196,29 @@ export class ExchangeRateService {
       // MYR to other currency
       const targetRate = bnmRates.find((r) => r.currency_code === toCurrency);
       if (targetRate) {
-        // Use middle rate for conversions
-        return 1 / targetRate.rate.middle_rate;
+        // BNM rate shows foreign currency to MYR, so we need to invert and adjust for unit
+        // For example: USD rate 4.1305 means 1 USD = 4.1305 MYR
+        // So 1 MYR = 1/4.1305 USD
+        const ratePerUnit = targetRate.rate.middle_rate / targetRate.unit;
+        return 1 / ratePerUnit;
       }
     } else if (toCurrency === 'MYR') {
       // Other currency to MYR
       const sourceRate = bnmRates.find((r) => r.currency_code === fromCurrency);
       if (sourceRate) {
-        return sourceRate.rate.middle_rate;
+        // BNM rate already shows how much MYR per unit of foreign currency
+        // Adjust for unit (e.g., JPY is per 100 units)
+        return sourceRate.rate.middle_rate / sourceRate.unit;
       }
     } else {
       // Cross rate (e.g., USD to SGD via MYR)
       const sourceRate = bnmRates.find((r) => r.currency_code === fromCurrency);
       const targetRate = bnmRates.find((r) => r.currency_code === toCurrency);
-      
+
       if (sourceRate && targetRate) {
         // Convert from -> MYR -> to
-        const fromToMYR = sourceRate.rate.middle_rate;
-        const myrToTarget = 1 / targetRate.rate.middle_rate;
+        const fromToMYR = sourceRate.rate.middle_rate / sourceRate.unit;
+        const myrToTarget = targetRate.unit / targetRate.rate.middle_rate;
         return fromToMYR * myrToTarget;
       }
     }
@@ -151,26 +228,47 @@ export class ExchangeRateService {
 
   /**
    * Fetch current exchange rate between two currencies
-   * Tries BNM API first (for MYR-related conversions), falls back to ExchangeRate-API
+   * TODO: Re-enable BNM API integration when endpoint is available
+   * TODO: Configure fallback ExchangeRate-API with valid API key
+   * Currently returns dummy rates for development
    */
   async getExchangeRate(
     fromCurrency: string,
     toCurrency: string
   ): Promise<number | null> {
+    if (fromCurrency === toCurrency) {
+      return 1;
+    }
+
     const cacheKey = `${fromCurrency}_${toCurrency}`;
-    
+
     // Check cache first
     const cached = this.cache.get(cacheKey);
     if (cached && Date.now() < cached.expiry) {
       return cached.data;
     }
 
-    // Try BNM API first if MYR is involved
-    if (fromCurrency === 'MYR' || toCurrency === 'MYR') {
+    // TODO: Temporarily using dummy rates - replace with actual API calls
+    const rate = this.getDummyRate(fromCurrency, toCurrency);
+
+    if (rate && !isNaN(rate) && rate > 0) {
+      // Cache the result
+      this.cache.set(cacheKey, {
+        data: rate,
+        expiry: Date.now() + this.cacheDuration,
+      });
+      return rate;
+    }
+
+    return null;
+
+    /* TODO: Re-enable when API is configured
+    // Try BNM API first (works for any currency pair via MYR)
+    try {
       const bnmRates = await this.fetchBNMRates();
       if (bnmRates) {
         const rate = this.getBNMRate(fromCurrency, toCurrency, bnmRates);
-        if (rate) {
+        if (rate && !isNaN(rate) && rate > 0) {
           // Cache the result
           this.cache.set(cacheKey, {
             data: rate,
@@ -179,6 +277,8 @@ export class ExchangeRateService {
           return rate;
         }
       }
+    } catch (error) {
+      console.error('BNM API error, falling back:', error);
     }
 
     // Fallback to ExchangeRate-API
@@ -216,17 +316,23 @@ export class ExchangeRateService {
       console.error(`Error fetching exchange rate:`, error);
       return null;
     }
+    */
   }
 
   /**
    * Fetch historical exchange rate for a specific date
-   * Note: BNM API doesn't provide historical data, so we use fallback API
+   * TODO: Re-enable when API is configured
+   * Currently returns current dummy rate
    */
   async getHistoricalRate(
     fromCurrency: string,
     toCurrency: string,
     date: Date
   ): Promise<number | null> {
+    // TODO: Temporarily using current dummy rates for historical data
+    return this.getDummyRate(fromCurrency, toCurrency);
+
+    /* TODO: Re-enable when API is configured
     try {
       const year = date.getFullYear();
       const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -259,20 +365,25 @@ export class ExchangeRateService {
       console.error(`Error fetching historical exchange rate:`, error);
       return null;
     }
+    */
   }
 
   /**
-   * Fetch all rates for supported currencies (MYR, SGD, USD)
+   * Fetch all rates for supported currencies
    * Uses BNM API for efficiency when possible
    */
   async getAllRates(): Promise<ExchangeRateData[]> {
-    const currencies = ['MYR', 'SGD', 'USD'];
+    const currencies = [
+      'MYR', 'SGD', 'USD', 'EUR', 'GBP', 'JPY',
+      'AUD', 'CAD', 'CHF', 'CNY', 'HKD', 'INR',
+      'IDR', 'KRW', 'THB', 'PHP', 'NZD', 'TWD', 'VND'
+    ];
     const rates: ExchangeRateData[] = [];
     const now = new Date();
 
     // Try to get all rates from BNM first
     const bnmRates = await this.fetchBNMRates();
-    
+
     for (const fromCurrency of currencies) {
       for (const toCurrency of currencies) {
         if (fromCurrency === toCurrency) continue;

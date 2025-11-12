@@ -5,14 +5,37 @@
 import { prisma } from '@/lib/prisma';
 import { exchangeRateService } from '@/lib/market-data/exchange-rates';
 
-export type Currency = 'MYR' | 'SGD' | 'USD';
+export type Currency = 
+  | 'MYR' | 'SGD' | 'USD' | 'EUR' | 'GBP' | 'JPY' 
+  | 'AUD' | 'CAD' | 'CHF' | 'CNY' | 'HKD' | 'INR' 
+  | 'IDR' | 'KRW' | 'THB' | 'PHP' | 'NZD' | 'TWD' | 'VND';
 
-export const SUPPORTED_CURRENCIES: Currency[] = ['MYR', 'SGD', 'USD'];
+export const SUPPORTED_CURRENCIES: Currency[] = [
+  'MYR', 'SGD', 'USD', 'EUR', 'GBP', 'JPY',
+  'AUD', 'CAD', 'CHF', 'CNY', 'HKD', 'INR',
+  'IDR', 'KRW', 'THB', 'PHP', 'NZD', 'TWD', 'VND'
+];
 
 export const CURRENCY_SYMBOLS: Record<Currency, string> = {
   MYR: 'RM',
   SGD: 'S$',
   USD: '$',
+  EUR: '€',
+  GBP: '£',
+  JPY: '¥',
+  AUD: 'A$',
+  CAD: 'C$',
+  CHF: 'CHF',
+  CNY: '¥',
+  HKD: 'HK$',
+  INR: '₹',
+  IDR: 'Rp',
+  KRW: '₩',
+  THB: '฿',
+  PHP: '₱',
+  NZD: 'NZ$',
+  TWD: 'NT$',
+  VND: '₫',
 };
 
 /**
@@ -61,16 +84,21 @@ export async function getLatestExchangeRate(
   // Fetch from API if not in database
   const rate = await exchangeRateService.getExchangeRate(fromCurrency, toCurrency);
   
-  if (rate) {
+  if (rate && !isNaN(rate) && rate > 0) {
     // Store in database for future use
-    await prisma.exchangeRate.create({
-      data: {
-        fromCurrency,
-        toCurrency,
-        rate,
-        date: new Date(),
-      },
-    });
+    try {
+      await prisma.exchangeRate.create({
+        data: {
+          fromCurrency,
+          toCurrency,
+          rate,
+          date: new Date(),
+        },
+      });
+    } catch (dbError) {
+      // Log but don't fail if database write fails
+      console.error('Failed to store exchange rate in database:', dbError);
+    }
     return rate;
   }
 
@@ -175,7 +203,13 @@ export async function getAllRatesForCurrency(
     if (currency === baseCurrency) {
       rates[currency] = 1;
     } else {
-      rates[currency] = await getLatestExchangeRate(baseCurrency, currency);
+      try {
+        const rate = await getLatestExchangeRate(baseCurrency, currency);
+        rates[currency] = rate;
+      } catch (error) {
+        console.error(`Failed to get rate for ${baseCurrency} to ${currency}:`, error);
+        // Skip this currency if rate fetch fails
+      }
     }
   }
 
