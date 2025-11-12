@@ -1,0 +1,51 @@
+{
+  "title": "Financial Goals",
+  "subtitle": "Track your progress toward your financial milestones",
+  "create_goal": "Create New Goal",
+  "edit_goal": "Edit Goal",
+  "delete_goal": "Delete Goal",
+  "no_goals": "No goals yet",
+  "no_goals_description": "Start by creating your first financial goal",
+  "goal_name": "Goal Name",
+  "goal_name_placeholder": "e.g., Down Payment for House",
+  "category": "Category",
+  "target_amount": "Target Amount",
+  "current_amount": "Current Amount",
+  "current_amount_hint": "Initial amount already saved",
+  "target_date": "Target Date",
+  "monthly_contribution": "Monthly Contribution",
+  "monthly_contribution_hint": "How much you plan to save monthly",
+  "expected_return": "Expected Annual Return %",
+  "expected_return_hint": "Expected investment return rate",
+  "progress": "Progress",
+  "remaining": "Remaining",
+  "projected": "Projected",
+  "on_track": "On Track",
+  "behind": "Behind",
+  "add_contribution": "Add Contribution",
+  "categories": {
+    "Property": "Property",
+    "Wedding": "Wedding",
+    "Car": "Car",
+    "Education": "Education",
+    "Retirement": "Retirement",
+    "Emergency Fund": "Emergency Fund",
+    "Vacation": "Vacation",
+    "Investment": "Investment",
+    "Other": "Other"
+  },
+  "messages": {
+    "created": "Goal created successfully",
+    "updated": "Goal updated successfully",
+    "deleted": "Goal deleted successfully",
+    "contribution_added": "Contribution added successfully",
+    "create_failed": "Failed to create goal",
+    "update_failed": "Failed to update goal",
+    "delete_failed": "Failed to delete goal",
+    "load_failed": "Failed to load goals"
+  },
+  "confirm": {
+    "delete_title": "Delete Goal",
+    "delete_message": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone."
+  }
+}

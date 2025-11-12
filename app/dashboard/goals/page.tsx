@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Plus, Target } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import Button from '@/components/ui/Button';
 import { GoalCard } from '@/components/goals/GoalCard';
 import { GoalCreator } from '@/components/goals/GoalCreator';
@@ -28,6 +29,7 @@ interface Goal {
 
 export default function GoalsPage() {
   const router = useRouter();
+  const { t } = useTranslation(['goals', 'common']);
   const { success, error: showError } = useToastContext();
   const [goals, setGoals] = useState<Goal[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -48,7 +50,7 @@ export default function GoalsPage() {
       setGoals(data);
     } catch (err) {
       console.error('Error fetching goals:', err);
-      showError('Failed to load goals');
+      showError(t('goals:messages.load_failed'));
     } finally {
       setIsLoading(false);
     }
@@ -64,11 +66,11 @@ export default function GoalsPage() {
 
       if (!response.ok) throw new Error('Failed to create goal');
 
-      success('Goal created successfully');
+      success(t('goals:messages.created'));
       fetchGoals();
     } catch (err) {
       console.error('Error creating goal:', err);
-      showError('Failed to create goal');
+      showError(t('goals:messages.create_failed'));
       throw err;
     }
   };
@@ -85,12 +87,12 @@ export default function GoalsPage() {
 
       if (!response.ok) throw new Error('Failed to update goal');
 
-      success('Goal updated successfully');
+      success(t('goals:messages.updated'));
       fetchGoals();
       setEditingGoal(null);
     } catch (err) {
       console.error('Error updating goal:', err);
-      showError('Failed to update goal');
+      showError(t('goals:messages.update_failed'));
       throw err;
     }
   };
@@ -103,11 +105,11 @@ export default function GoalsPage() {
 
       if (!response.ok) throw new Error('Failed to delete goal');
 
-      success('Goal deleted successfully');
+      success(t('goals:messages.deleted'));
       fetchGoals();
     } catch (err) {
       console.error('Error deleting goal:', err);
-      showError('Failed to delete goal');
+      showError(t('goals:messages.delete_failed'));
     }
   };
 
@@ -126,12 +128,12 @@ export default function GoalsPage() {
 
       if (!response.ok) throw new Error('Failed to add contribution');
 
-      success('Contribution added successfully');
+      success(t('goals:messages.contribution_added'));
       fetchGoals();
       setSelectedGoalForContribution(null);
     } catch (err) {
       console.error('Error adding contribution:', err);
-      showError('Failed to add contribution');
+      showError(t('goals:messages.create_failed'));
       throw err;
     }
   };
@@ -161,7 +163,7 @@ export default function GoalsPage() {
       <div className="flex items-center justify-center h-96">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-          <p className="mt-4 text-muted-foreground">Loading goals...</p>
+          <p className="mt-4 text-muted-foreground">{t('common:loading')}</p>
         </div>
       </div>
     );
@@ -171,27 +173,23 @@ export default function GoalsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold">Financial Goals</h1>
-          <p className="text-muted-foreground mt-1">
-            Track your progress toward your financial milestones
-          </p>
+          <h1 className="text-3xl font-bold">{t('goals:title')}</h1>
+          <p className="text-muted-foreground mt-1">{t('goals:subtitle')}</p>
         </div>
         <Button onClick={() => setIsCreatorOpen(true)}>
           <Plus className="h-4 w-4 mr-2" />
-          New Goal
+          {t('goals:create_goal')}
         </Button>
       </div>
 
       {goals.length === 0 ? (
         <div className="text-center py-16">
           <Target className="h-16 w-16 mx-auto text-muted-foreground opacity-50" />
-          <h3 className="mt-4 text-lg font-semibold">No goals yet</h3>
-          <p className="text-muted-foreground mt-2">
-            Start by creating your first financial goal
-          </p>
+          <h3 className="mt-4 text-lg font-semibold">{t('goals:no_goals')}</h3>
+          <p className="text-muted-foreground mt-2">{t('goals:no_goals_description')}</p>
           <Button onClick={() => setIsCreatorOpen(true)} className="mt-4">
             <Plus className="h-4 w-4 mr-2" />
-            Create Your First Goal
+            {t('goals:create_goal')}
           </Button>
         </div>
       ) : (

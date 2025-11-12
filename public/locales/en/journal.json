@@ -1,0 +1,21 @@
+{
+  "title": "Financial Journal",
+  "subtitle": "Track your financial thoughts and decisions",
+  "create_entry": "Create Entry",
+  "edit_entry": "Edit Entry",
+  "delete_entry": "Delete Entry",
+  "no_entries": "No journal entries yet",
+  "entry_title": "Title",
+  "entry_content": "Content",
+  "emotional_tags": "Emotional Tags",
+  "linked_transactions": "Linked Transactions",
+  "messages": {
+    "created": "Journal entry created successfully",
+    "updated": "Journal entry updated successfully",
+    "deleted": "Journal entry deleted successfully",
+    "create_failed": "Failed to create entry",
+    "update_failed": "Failed to update entry",
+    "delete_failed": "Failed to delete entry",
+    "load_failed": "Failed to load entries"
+  }
+}

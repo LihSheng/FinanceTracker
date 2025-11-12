@@ -1,0 +1,33 @@
+{
+  "title": "Alert Center",
+  "create_alert": "Create Alert",
+  "edit_alert": "Edit Alert",
+  "delete_alert": "Delete Alert",
+  "no_alerts": "No alerts",
+  "no_alerts_description": "Get started by creating a new alert.",
+  "active": "Active",
+  "inactive": "Inactive",
+  "activate": "Activate",
+  "deactivate": "Deactivate",
+  "last_triggered": "Last triggered",
+  "alert_types": {
+    "price": "Price Alert",
+    "exchange_rate": "Exchange Rate",
+    "milestone": "Goal Milestone",
+    "allocation_drift": "Allocation Drift",
+    "bill_reminder": "Bill Reminder"
+  },
+  "messages": {
+    "created": "Alert created successfully",
+    "updated": "Alert updated successfully",
+    "deleted": "Alert deleted successfully",
+    "create_failed": "Failed to create alert",
+    "update_failed": "Failed to update alert",
+    "delete_failed": "Failed to delete alert",
+    "load_failed": "Failed to load alerts"
+  },
+  "confirm": {
+    "delete_title": "Delete Alert",
+    "delete_message": "Are you sure you want to delete this alert? This action cannot be undone."
+  }
+}

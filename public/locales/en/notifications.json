@@ -1,0 +1,12 @@
+{
+  "title": "Notifications",
+  "mark_all_read": "Mark All as Read",
+  "mark_as_read": "Mark as Read",
+  "no_notifications": "No notifications",
+  "unread": "Unread",
+  "messages": {
+    "marked_read": "Notification marked as read",
+    "all_marked_read": "All notifications marked as read",
+    "load_failed": "Failed to load notifications"
+  }
+}

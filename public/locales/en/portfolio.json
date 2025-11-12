@@ -1,0 +1,44 @@
+{
+  "title": "Portfolio",
+  "add_asset": "Add Asset",
+  "edit_asset": "Edit Asset",
+  "delete_asset": "Delete Asset",
+  "import_csv": "Import CSV",
+  "no_assets": "No assets yet",
+  "platform": "Platform",
+  "asset_type": "Asset Type",
+  "ticker": "Ticker/Symbol",
+  "asset_name": "Asset Name",
+  "units": "Units",
+  "buy_price": "Buy Price",
+  "current_price": "Current Price",
+  "purchase_date": "Purchase Date",
+  "notes": "Notes",
+  "link_to_goal": "Link to Goal",
+  "no_goal": "No goal",
+  "current_value": "Current Value",
+  "invested_value": "Invested Value",
+  "unrealized_gain": "P/L",
+  "asset_types": {
+    "stock": "Stock",
+    "crypto": "Cryptocurrency",
+    "gold": "Gold",
+    "cash": "Cash",
+    "other": "Other"
+  },
+  "messages": {
+    "created": "Asset added successfully",
+    "updated": "Asset updated successfully",
+    "deleted": "Asset deleted successfully",
+    "imported": "Assets imported successfully",
+    "create_failed": "Failed to add asset",
+    "update_failed": "Failed to update asset",
+    "delete_failed": "Failed to delete asset",
+    "import_failed": "Failed to import assets",
+    "load_failed": "Failed to load portfolio"
+  },
+  "confirm": {
+    "delete_title": "Delete Asset",
+    "delete_message": "Are you sure you want to delete this asset? This action cannot be undone."
+  }
+}

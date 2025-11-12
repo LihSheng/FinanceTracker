@@ -1,0 +1,28 @@
+{
+  "title": "Budgets",
+  "create_budget": "Create Budget",
+  "edit_budget": "Edit Budget",
+  "delete_budget": "Delete Budget",
+  "add_category": "Add Category",
+  "category_name": "Category Name",
+  "allocated_amount": "Allocated Amount",
+  "spent_amount": "Spent",
+  "remaining": "Remaining",
+  "budget": "Budget",
+  "used": "used",
+  "over_budget": "Over Budget",
+  "messages": {
+    "created": "Budget created successfully",
+    "updated": "Budget updated successfully",
+    "deleted": "Budget deleted successfully",
+    "category_deleted": "Category deleted successfully",
+    "create_failed": "Failed to create budget",
+    "update_failed": "Failed to update budget",
+    "delete_failed": "Failed to delete budget",
+    "load_failed": "Failed to load budgets"
+  },
+  "confirm": {
+    "delete_category_title": "Delete Category",
+    "delete_category_message": "Are you sure you want to delete the \"{{name}}\" category? This action cannot be undone."
+  }
+}

@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 import SessionProvider from '@/components/providers/SessionProvider';
 import { ToastProvider } from '@/contexts/ToastContext';
+import { I18nProvider } from '@/contexts/I18nContext';
 
 export const metadata: Metadata = {
   title: 'Finance Tracker',
@@ -16,9 +17,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body suppressHydrationWarning>
-        <SessionProvider>
-          <ToastProvider>{children}</ToastProvider>
-        </SessionProvider>
+        <I18nProvider>
+          <SessionProvider>
+            <ToastProvider>{children}</ToastProvider>
+          </SessionProvider>
+        </I18nProvider>
       </body>
     </html>
   );

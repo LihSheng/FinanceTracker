@@ -1,0 +1,57 @@
+{
+  "app_name": "Finance Tracker",
+  "welcome": "Welcome",
+  "loading": "Loading...",
+  "save": "Save",
+  "cancel": "Cancel",
+  "delete": "Delete",
+  "edit": "Edit",
+  "create": "Create",
+  "update": "Update",
+  "confirm": "Confirm",
+  "close": "Close",
+  "back": "Back",
+  "next": "Next",
+  "submit": "Submit",
+  "search": "Search",
+  "filter": "Filter",
+  "export": "Export",
+  "import": "Import",
+  "view_details": "View Details",
+  "add": "Add",
+  "remove": "Remove",
+  "yes": "Yes",
+  "no": "No",
+  "optional": "Optional",
+  "required": "Required",
+  "success": "Success",
+  "error": "Error",
+  "warning": "Warning",
+  "info": "Info",
+  "currency": {
+    "MYR": "MYR",
+    "SGD": "SGD",
+    "USD": "USD"
+  },
+  "date": {
+    "today": "Today",
+    "yesterday": "Yesterday",
+    "this_week": "This Week",
+    "this_month": "This Month",
+    "this_year": "This Year",
+    "custom": "Custom"
+  },
+  "validation": {
+    "required_field": "This field is required",
+    "invalid_email": "Invalid email address",
+    "invalid_number": "Invalid number",
+    "min_value": "Minimum value is {{min}}",
+    "max_value": "Maximum value is {{max}}"
+  },
+  "errors": {
+    "generic": "Something went wrong. Please try again.",
+    "network": "Network error. Please check your connection.",
+    "unauthorized": "You are not authorized to perform this action.",
+    "not_found": "Resource not found."
+  }
+}
