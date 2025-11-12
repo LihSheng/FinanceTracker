@@ -1,0 +1,234 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                String              @id @default(cuid())
+  email             String              @unique
+  name              String?
+  password          String
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+  budgets           Budget[]
+  transactions      Transaction[]
+  forecasts         Forecast[]
+  assets            Asset[]
+  goals             Goal[]
+  alerts            Alert[]
+  notifications     Notification[]
+  journalEntries    JournalEntry[]
+  portfolioSnapshots PortfolioSnapshot[]
+}
+
+model Budget {
+  id          String           @id @default(cuid())
+  userId      String
+  user        User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name        String
+  totalAmount Decimal          @db.Decimal(10, 2)
+  period      String           // monthly, yearly
+  startDate   DateTime
+  endDate     DateTime?
+  categories  BudgetCategory[]
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  
+  @@index([userId])
+}
+
+model BudgetCategory {
+  id              String        @id @default(cuid())
+  budgetId        String
+  budget          Budget        @relation(fields: [budgetId], references: [id], onDelete: Cascade)
+  name            String
+  allocatedAmount Decimal       @db.Decimal(10, 2)
+  color           String?       // for chart visualization
+  transactions    Transaction[]
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  
+  @@index([budgetId])
+}
+
+model Transaction {
+  id          String          @id @default(cuid())
+  userId      String
+  user        User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  categoryId  String?
+  category    BudgetCategory? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  amount      Decimal         @db.Decimal(10, 2)
+  type        String          // income, expense
+  description String
+  date        DateTime
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+  
+  @@index([userId])
+  @@index([categoryId])
+  @@index([date])
+}
+
+model Forecast {
+  id              String   @id @default(cuid())
+  userId          String
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name            String
+  startDate       DateTime
+  endDate         DateTime
+  projectedData   Json     // stores forecast calculations
+  parameters      Json     // stores input parameters
+  createdAt       DateTime @default(now())
+  
+  @@index([userId])
+}
+
+model Asset {
+  id              String         @id @default(cuid())
+  userId          String
+  user            User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  platform        String         // StashAway, moomoo, Versa, etc.
+  assetType       String         // stock, crypto, gold, cash, etc.
+  ticker          String?        // stock ticker or crypto symbol
+  name            String
+  units           Decimal        @db.Decimal(18, 8)
+  buyPrice        Decimal        @db.Decimal(18, 8)
+  currentPrice    Decimal?       @db.Decimal(18, 8)
+  currency        String         // MYR, SGD, USD
+  purchaseDate    DateTime
+  notes           String?
+  goalId          String?        // linked goal
+  goal            Goal?          @relation(fields: [goalId], references: [id], onDelete: SetNull)
+  journalEntries  JournalEntry[]
+  priceHistory    PriceHistory[]
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  
+  @@index([userId])
+  @@index([ticker])
+  @@index([goalId])
+}
+
+model PriceHistory {
+  id        String   @id @default(cuid())
+  assetId   String
+  asset     Asset    @relation(fields: [assetId], references: [id], onDelete: Cascade)
+  price     Decimal  @db.Decimal(18, 8)
+  date      DateTime
+  createdAt DateTime @default(now())
+  
+  @@index([assetId, date])
+}
+
+model ExchangeRate {
+  id           String   @id @default(cuid())
+  fromCurrency String
+  toCurrency   String
+  rate         Decimal  @db.Decimal(18, 8)
+  date         DateTime
+  createdAt    DateTime @default(now())
+  
+  @@unique([fromCurrency, toCurrency, date])
+  @@index([date])
+}
+
+model Goal {
+  id                  String             @id @default(cuid())
+  userId              String
+  user                User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name                String
+  category            String             // property, wedding, car, education, etc.
+  targetAmount        Decimal            @db.Decimal(18, 2)
+  currentAmount       Decimal            @db.Decimal(18, 2) @default(0)
+  currency            String             @default("MYR")
+  targetDate          DateTime?
+  monthlyContribution Decimal?           @db.Decimal(18, 2)
+  expectedReturn      Decimal?           @db.Decimal(5, 2) // annual return percentage
+  assets              Asset[]
+  contributions       GoalContribution[]
+  createdAt           DateTime           @default(now())
+  updatedAt           DateTime           @updatedAt
+  
+  @@index([userId])
+}
+
+model GoalContribution {
+  id        String   @id @default(cuid())
+  goalId    String
+  goal      Goal     @relation(fields: [goalId], references: [id], onDelete: Cascade)
+  amount    Decimal  @db.Decimal(18, 2)
+  date      DateTime
+  notes     String?
+  createdAt DateTime @default(now())
+  
+  @@index([goalId])
+}
+
+model Alert {
+  id            String    @id @default(cuid())
+  userId        String
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type          String    // price, exchange_rate, milestone, allocation_drift, bill_reminder
+  condition     Json      // stores alert conditions
+  isActive      Boolean   @default(true)
+  lastTriggered DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  @@index([userId, isActive])
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type      String
+  title     String
+  message   String
+  isRead    Boolean  @default(false)
+  relatedId String?  // ID of related entity (asset, goal, etc.)
+  createdAt DateTime @default(now())
+  
+  @@index([userId, isRead])
+}
+
+model JournalEntry {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  assetId     String?
+  asset       Asset?   @relation(fields: [assetId], references: [id], onDelete: SetNull)
+  title       String
+  content     String   @db.Text
+  emotionTags String[] // confident, uncertain, FOMO, fearful, etc.
+  tradeType   String?  // buy, sell, hold
+  outcome     String?  // success, failure, neutral (filled after position closed)
+  date        DateTime
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@index([userId])
+  @@index([assetId])
+}
+
+model PortfolioSnapshot {
+  id             String   @id @default(cuid())
+  userId         String
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  totalValue     Decimal  @db.Decimal(18, 2)
+  totalInvested  Decimal  @db.Decimal(18, 2)
+  unrealizedGain Decimal  @db.Decimal(18, 2)
+  currency       String
+  breakdown      Json     // asset class, platform, currency breakdown
+  date           DateTime
+  createdAt      DateTime @default(now())
+  
+  @@index([userId, date])
+}

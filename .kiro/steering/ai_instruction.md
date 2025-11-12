@@ -1,0 +1,1 @@
+1. No need to summarise the thing done for each task, just need to mention the task is completed.
