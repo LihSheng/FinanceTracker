@@ -6,9 +6,10 @@ import NotificationBell from '@/components/layout/NotificationBell';
 
 interface HeaderProps {
   userName?: string;
+  onMenuClick?: () => void;
 }
 
-export default function Header({ userName }: HeaderProps) {
+export default function Header({ userName, onMenuClick }: HeaderProps) {
   const [showUserMenu, setShowUserMenu] = useState(false);
 
   const handleSignOut = async () => {
@@ -20,6 +21,7 @@ export default function Header({ userName }: HeaderProps) {
       <div className="flex items-center justify-between h-16 px-4 sm:px-6 lg:px-8">
         <div className="flex items-center">
           <button
+            onClick={onMenuClick}
             className="md:hidden p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100"
             aria-label="Open menu"
           >
@@ -31,7 +33,7 @@ export default function Header({ userName }: HeaderProps) {
 
         <div className="flex items-center space-x-4">
           <NotificationBell />
-          
+
           <div className="relative">
             <button
               onClick={() => setShowUserMenu(!showUserMenu)}

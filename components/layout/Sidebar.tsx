@@ -3,6 +3,11 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
+interface SidebarProps {
+  isOpen?: boolean;
+  onClose?: () => void;
+}
+
 interface NavItem {
   name: string;
   href: string;
@@ -93,12 +98,27 @@ const navItems: NavItem[] = [
   },
 ];
 
-export default function Sidebar() {
+export default function Sidebar({ isOpen = false, onClose }: SidebarProps) {
   const pathname = usePathname();
 
   return (
-    <aside className="hidden md:flex md:flex-shrink-0">
-      <div className="flex flex-col w-64 bg-gray-900">
+    <>
+      {/* Mobile overlay */}
+      {isOpen && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"
+          onClick={onClose}
+        />
+      )}
+
+      {/* Sidebar */}
+      <aside className={`
+        fixed md:static inset-y-0 left-0 z-50
+        transform transition-transform duration-300 ease-in-out
+        md:translate-x-0 md:flex md:flex-shrink-0
+        ${isOpen ? 'translate-x-0' : '-translate-x-full'}
+      `}>
+        <div className="flex flex-col w-64 bg-gray-900">
         <div className="flex items-center justify-center h-16 px-4 bg-gray-800">
           <h1 className="text-xl font-bold text-white">Finance Tracker</h1>
         </div>
@@ -134,6 +154,7 @@ export default function Sidebar() {
           </Link>
         </div>
       </div>
-    </aside>
+      </aside>
+    </>
   );
 }
