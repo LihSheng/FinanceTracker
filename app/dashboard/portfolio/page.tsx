@@ -1,20 +1,46 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
+'use client';
+
+import { useState } from 'react';
+import PortfolioDashboard from '@/components/portfolio/PortfolioDashboard';
+import AddAssetForm from '@/components/portfolio/AddAssetForm';
+import CSVImportDialog from '@/components/portfolio/CSVImportDialog';
+import Button from '@/components/ui/Button';
 
 export default function PortfolioPage() {
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [showImportDialog, setShowImportDialog] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
+
+  const handleSuccess = () => {
+    setShowAddForm(false);
+    setShowImportDialog(false);
+    setRefreshKey((prev) => prev + 1);
+  };
+
   return (
-    <div className="p-6">
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold text-gray-900">Portfolio</h1>
-        <p className="text-gray-600 mt-1">Track your investments and assets</p>
+    <div className="space-y-6">
+      <div className="flex justify-between items-center">
+        <h1 className="text-3xl font-bold">Portfolio</h1>
+        <div className="flex gap-2">
+          <Button onClick={() => setShowImportDialog(true)} variant="outline">
+            Import CSV
+          </Button>
+          <Button onClick={() => setShowAddForm(true)}>Add Asset</Button>
+        </div>
       </div>
-      <Card>
-        <CardHeader>
-          <CardTitle>Portfolio Overview</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-sm text-gray-500 text-center py-8">Portfolio management coming soon</p>
-        </CardContent>
-      </Card>
+
+      <PortfolioDashboard key={refreshKey} />
+
+      {showAddForm && (
+        <AddAssetForm onSuccess={handleSuccess} onCancel={() => setShowAddForm(false)} />
+      )}
+
+      {showImportDialog && (
+        <CSVImportDialog
+          onSuccess={handleSuccess}
+          onCancel={() => setShowImportDialog(false)}
+        />
+      )}
     </div>
   );
 }
