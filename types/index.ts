@@ -70,3 +70,40 @@ export interface Goal {
   projectedCompletionDate?: Date;
   remainingAmount: number;
 }
+
+export interface AlertCondition {
+  ticker?: string;
+  threshold?: number;
+  direction?: 'above' | 'below';
+  currencyPair?: string;
+  goalId?: string;
+  milestonePercent?: number;
+  driftPercent?: number;
+  assetType?: string;
+  billName?: string;
+  amount?: number;
+  dueDate?: string;
+  reminderDaysBefore?: number;
+}
+
+export interface Alert {
+  id: string;
+  userId: string;
+  type: 'price' | 'exchange_rate' | 'milestone' | 'allocation_drift' | 'bill_reminder';
+  condition: AlertCondition;
+  isActive: boolean;
+  lastTriggered?: Date;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface Notification {
+  id: string;
+  userId: string;
+  type: string;
+  title: string;
+  message: string;
+  isRead: boolean;
+  relatedId?: string;
+  createdAt: Date;
+}

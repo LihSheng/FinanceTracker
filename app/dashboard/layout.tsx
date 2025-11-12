@@ -6,6 +6,7 @@ import { useState } from 'react';
 import Sidebar from '@/components/layout/Sidebar';
 import Header from '@/components/layout/Header';
 import ErrorBoundary from '@/components/ui/ErrorBoundary';
+import PageTransition from '@/components/layout/PageTransition';
 
 export default function DashboardLayout({
   children,
@@ -39,7 +40,9 @@ export default function DashboardLayout({
         />
         <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
           <ErrorBoundary>
-            {children}
+            <PageTransition>
+              {children}
+            </PageTransition>
           </ErrorBoundary>
         </main>
       </div>
