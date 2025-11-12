@@ -1,42 +1,32 @@
 'use client';
 
 import { usePathname } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useTransition } from 'react';
 
 export default function PageTransition({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const [isLoading, setIsLoading] = useState(false);
   const [displayChildren, setDisplayChildren] = useState(children);
+  const [isPending, startTransition] = useTransition();
 
   useEffect(() => {
-    setIsLoading(true);
-    
-    // Small delay to show loading state
-    const timer = setTimeout(() => {
+    startTransition(() => {
       setDisplayChildren(children);
-      setIsLoading(false);
-    }, 150);
-
-    return () => clearTimeout(timer);
+    });
   }, [pathname, children]);
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <div className="flex flex-col items-center gap-4">
-          <div className="relative">
-            <div className="w-12 h-12 rounded-full border-4 border-gray-200"></div>
-            <div className="w-12 h-12 rounded-full border-4 border-blue-600 border-t-transparent animate-spin absolute top-0 left-0"></div>
-          </div>
-          <p className="text-sm text-gray-500 animate-pulse">Loading...</p>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className="animate-fadeIn">
-      {displayChildren}
-    </div>
+    <>
+      {/* Top loading bar - shows immediately on navigation */}
+      {isPending && (
+        <div className="fixed top-0 left-0 right-0 z-50">
+          <div className="h-1 bg-gradient-to-r from-green-500 via-blue-500 to-green-500 animate-pulse"></div>
+        </div>
+      )}
+      
+      {/* Content with fade effect during transition */}
+      <div className={`transition-opacity duration-150 ${isPending ? 'opacity-60' : 'opacity-100'}`}>
+        {displayChildren}
+      </div>
+    </>
   );
 }

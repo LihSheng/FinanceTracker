@@ -1,7 +1,9 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
+import { useState, useTransition } from 'react';
+import { Logo } from '@/components/ui/Logo';
 
 interface SidebarProps {
   isOpen?: boolean;
@@ -102,12 +104,21 @@ const navItems: NavItem[] = [
 
 export default function Sidebar({ isOpen = false, onClose, isCollapsed = false, onToggleCollapse }: SidebarProps) {
   const pathname = usePathname();
+  const router = useRouter();
+  const [isPending, startTransition] = useTransition();
+  const [clickedPath, setClickedPath] = useState<string | null>(null);
 
-  const handleLinkClick = () => {
-    // Close sidebar on mobile when a link is clicked
-    if (onClose) {
-      onClose();
-    }
+  const handleLinkClick = (href: string, e: React.MouseEvent) => {
+    e.preventDefault();
+    setClickedPath(href);
+    
+    startTransition(() => {
+      router.push(href);
+      // Close sidebar on mobile when a link is clicked
+      if (onClose) {
+        onClose();
+      }
+    });
   };
 
   return (
@@ -128,15 +139,13 @@ export default function Sidebar({ isOpen = false, onClose, isCollapsed = false, 
           transform transition-all duration-300 ease-in-out
           md:translate-x-0 md:flex md:flex-shrink-0
           ${isOpen ? 'translate-x-0' : '-translate-x-full'}
-          ${isCollapsed ? 'md:w-20' : 'md:w-64'}
+          ${isCollapsed ? 'md:w-20' : 'md:w-56'}
         `}
       >
-        <div className={`flex flex-col h-full bg-gray-900 shadow-xl md:shadow-none transition-all duration-300 ${isCollapsed ? 'w-20' : 'w-64'}`}>
+        <div className={`flex flex-col h-full bg-gradient-to-b from-gray-900 via-gray-900 to-gray-950 shadow-xl md:shadow-none transition-all duration-300 ${isCollapsed ? 'w-20' : 'w-56'}`}>
           {/* Header */}
-          <div className="flex items-center justify-between h-16 px-4 bg-gray-800">
-            <h1 className="text-xl font-bold text-white truncate">
-              {isCollapsed ? 'FT' : 'Finance Tracker'}
-            </h1>
+          <div className="flex items-center justify-between h-20 px-4 bg-gradient-to-r from-gray-800 to-gray-900 border-b border-gray-700">
+            <Logo collapsed={isCollapsed} />
             <div className="flex items-center gap-1">
               {/* Close button for mobile */}
               <button
@@ -173,13 +182,18 @@ export default function Sidebar({ isOpen = false, onClose, isCollapsed = false, 
                 <Link
                   key={item.name}
                   href={item.href}
-                  onClick={handleLinkClick}
-                  className={`flex items-center ${isCollapsed ? 'justify-center px-2' : 'px-4'} py-3 text-sm font-medium rounded-md transition-colors ${isActive
-                    ? 'bg-gray-800 text-white'
-                    : 'text-gray-300 hover:bg-gray-800 hover:text-white'
-                    }`}
+                  onClick={(e) => handleLinkClick(item.href, e)}
+                  className={`flex items-center ${isCollapsed ? 'justify-center px-2' : 'px-4'} py-3 text-sm font-medium rounded-lg transition-all duration-200 relative ${isActive
+                    ? 'bg-gradient-to-r from-green-600 to-green-500 text-white shadow-lg shadow-green-500/50'
+                    : 'text-gray-300 hover:bg-gray-800 hover:text-white hover:translate-x-1'
+                    } ${isPending && clickedPath === item.href ? 'opacity-60' : ''}`}
                   title={isCollapsed ? item.name : undefined}
                 >
+                  {isPending && clickedPath === item.href && (
+                    <div className="absolute inset-0 flex items-center justify-center bg-gray-800/50 rounded-lg">
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    </div>
+                  )}
                   {item.icon}
                   {!isCollapsed && <span className="ml-3">{item.name}</span>}
                 </Link>
@@ -188,13 +202,18 @@ export default function Sidebar({ isOpen = false, onClose, isCollapsed = false, 
           </nav>
 
           {/* Settings */}
-          <div className="flex-shrink-0 px-4 py-4 border-t border-gray-800">
+          <div className="flex-shrink-0 px-4 py-4 border-t border-gray-800 bg-gray-900/50">
             <Link
               href="/dashboard/settings"
-              onClick={handleLinkClick}
-              className={`flex items-center ${isCollapsed ? 'justify-center px-2' : 'px-4'} py-3 text-sm font-medium text-gray-300 rounded-md hover:bg-gray-800 hover:text-white transition-colors`}
+              onClick={(e) => handleLinkClick('/dashboard/settings', e)}
+              className={`flex items-center ${isCollapsed ? 'justify-center px-2' : 'px-4'} py-3 text-sm font-medium text-gray-300 rounded-lg hover:bg-gray-800 hover:text-white transition-all duration-200 hover:translate-x-1 relative ${isPending && clickedPath === '/dashboard/settings' ? 'opacity-60' : ''}`}
               title={isCollapsed ? "Settings" : undefined}
             >
+              {isPending && clickedPath === '/dashboard/settings' && (
+                <div className="absolute inset-0 flex items-center justify-center bg-gray-800/50 rounded-lg">
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                </div>
+              )}
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
