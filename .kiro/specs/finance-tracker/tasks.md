@@ -177,16 +177,24 @@
   - Add forecast parameter adjustment controls
   - _Requirements: 4.1, 4.2, 4.3, 4.4, 4.5, 4.6, 4.7_
 
-- [ ] 13. AI Insights Module
-- [ ] 13.1 Implement AI integration
-  - Set up OpenAI or Gemini API client
+- [x] 13. AI Insights Module
+
+
+
+
+- [x] 13.1 Implement AI integration
+
+
+  - Set up Gemini API client
   - Create insight generation prompts
   - Implement financial health score calculation
   - Add rebalancing recommendation logic
   - Create insight caching mechanism
   - _Requirements: 11.1, 11.2, 11.3, 11.4, 11.5, 11.6_
 
-- [ ] 13.2 Build AI insights UI
+- [x] 13.2 Build AI insights UI
+
+
   - Create InsightsDashboard component
   - Implement FinancialHealthScore visualization
   - Build RebalancingRecommendations component
