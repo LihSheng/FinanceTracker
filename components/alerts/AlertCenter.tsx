@@ -6,8 +6,11 @@ import Button from '@/components/ui/Button';
 import Badge from '@/components/ui/Badge';
 import AlertConfigDialog from './AlertConfigDialog';
 import { useToast } from '@/components/ui/use-toast';
+import { useConfirm } from '@/hooks/useConfirm';
+import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 
 export default function AlertCenter() {
+  const { confirm, isOpen, options, handleConfirm, handleCancel } = useConfirm();
   const [alerts, setAlerts] = useState<Alert[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -110,7 +113,15 @@ export default function AlertCenter() {
   };
 
   const handleDeleteAlert = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this alert?')) return;
+    const confirmed = await confirm({
+      title: 'Delete Alert',
+      message: 'Are you sure you want to delete this alert? This action cannot be undone.',
+      confirmText: 'Delete',
+      cancelText: 'Cancel',
+      variant: 'danger',
+    });
+
+    if (!confirmed) return;
 
     try {
       const response = await fetch(`/api/alerts/${id}`, {
@@ -293,6 +304,17 @@ export default function AlertCenter() {
         }}
         onSave={editingAlert ? handleUpdateAlert : handleCreateAlert}
         alert={editingAlert}
+      />
+
+      <ConfirmDialog
+        isOpen={isOpen}
+        onClose={handleCancel}
+        onConfirm={handleConfirm}
+        title={options.title}
+        message={options.message}
+        confirmText={options.confirmText}
+        cancelText={options.cancelText}
+        variant={options.variant}
       />
     </div>
   );

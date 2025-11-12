@@ -3,6 +3,8 @@
 import { useState } from 'react';
 import Button from '@/components/ui/Button';
 import { format } from 'date-fns';
+import { useConfirm } from '@/hooks/useConfirm';
+import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 
 interface Transaction {
   id: string;
@@ -39,12 +41,19 @@ export default function TransactionList({
   onDelete,
   isLoading = false,
 }: TransactionListProps) {
+  const { confirm, isOpen, options, handleConfirm, handleCancel } = useConfirm();
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this transaction?')) {
-      return;
-    }
+    const confirmed = await confirm({
+      title: 'Delete Transaction',
+      message: 'Are you sure you want to delete this transaction? This action cannot be undone.',
+      confirmText: 'Delete',
+      cancelText: 'Cancel',
+      variant: 'danger',
+    });
+
+    if (!confirmed) return;
 
     setDeletingId(id);
     try {
@@ -236,6 +245,17 @@ export default function TransactionList({
           </div>
         </div>
       )}
+
+      <ConfirmDialog
+        isOpen={isOpen}
+        onClose={handleCancel}
+        onConfirm={handleConfirm}
+        title={options.title}
+        message={options.message}
+        confirmText={options.confirmText}
+        cancelText={options.cancelText}
+        variant={options.variant}
+      />
     </div>
   );
 }

@@ -7,6 +7,8 @@ import Button from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import Progress from '@/components/ui/Progress';
 import Badge from '@/components/ui/Badge';
+import { useConfirm } from '@/hooks/useConfirm';
+import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 
 interface GoalCardProps {
   goal: {
@@ -36,16 +38,25 @@ export function GoalCard({
   onAddContribution,
   onViewDetails,
 }: GoalCardProps) {
+  const { confirm, isOpen, options, handleConfirm, handleCancel } = useConfirm();
   const [isDeleting, setIsDeleting] = useState(false);
 
   const handleDelete = async () => {
-    if (window.confirm(`Are you sure you want to delete "${goal.name}"?`)) {
-      setIsDeleting(true);
-      try {
-        await onDelete(goal.id);
-      } finally {
-        setIsDeleting(false);
-      }
+    const confirmed = await confirm({
+      title: 'Delete Goal',
+      message: `Are you sure you want to delete "${goal.name}"? This action cannot be undone.`,
+      confirmText: 'Delete',
+      cancelText: 'Cancel',
+      variant: 'danger',
+    });
+
+    if (!confirmed) return;
+
+    setIsDeleting(true);
+    try {
+      await onDelete(goal.id);
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -178,6 +189,17 @@ export function GoalCard({
           </Button>
         </div>
       </CardContent>
+
+      <ConfirmDialog
+        isOpen={isOpen}
+        onClose={handleCancel}
+        onConfirm={handleConfirm}
+        title={options.title}
+        message={options.message}
+        confirmText={options.confirmText}
+        cancelText={options.cancelText}
+        variant={options.variant}
+      />
     </Card>
   );
 }

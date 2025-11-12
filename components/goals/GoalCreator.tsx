@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -53,16 +53,33 @@ export function GoalCreator({
   const form = useForm<GoalFormData>({
     resolver: zodResolver(goalSchema),
     defaultValues: {
-      name: initialData?.name || '',
-      category: initialData?.category || '',
-      targetAmount: initialData?.targetAmount?.toString() || '',
-      currentAmount: initialData?.currentAmount?.toString() || '0',
-      currency: initialData?.currency || 'MYR',
-      targetDate: initialData?.targetDate ? new Date(initialData.targetDate).toISOString().split('T')[0] : '',
-      monthlyContribution: initialData?.monthlyContribution?.toString() || '',
-      expectedReturn: initialData?.expectedReturn?.toString() || '',
+      name: '',
+      category: '',
+      targetAmount: '',
+      currentAmount: '0',
+      currency: 'MYR',
+      targetDate: '',
+      monthlyContribution: '',
+      expectedReturn: '',
     },
   });
+
+  useEffect(() => {
+    if (open) {
+      form.reset({
+        name: initialData?.name || '',
+        category: initialData?.category || '',
+        targetAmount: initialData?.targetAmount?.toString() || '',
+        currentAmount: initialData?.currentAmount?.toString() || '0',
+        currency: initialData?.currency || 'MYR',
+        targetDate: initialData?.targetDate
+          ? new Date(initialData.targetDate).toISOString().split('T')[0]
+          : '',
+        monthlyContribution: initialData?.monthlyContribution?.toString() || '',
+        expectedReturn: initialData?.expectedReturn?.toString() || '',
+      });
+    }
+  }, [open, initialData, form]);
 
   const handleSubmit = async (data: GoalFormData) => {
     setIsSubmitting(true);

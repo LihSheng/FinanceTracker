@@ -7,7 +7,7 @@ import Button from '@/components/ui/Button';
 import { GoalCard } from '@/components/goals/GoalCard';
 import { GoalCreator } from '@/components/goals/GoalCreator';
 import { ContributionDialog } from '@/components/goals/ContributionDialog';
-import { useToast } from '@/lib/hooks/useToast';
+import { useToastContext } from '@/contexts/ToastContext';
 
 interface Goal {
   id: string;
@@ -28,7 +28,7 @@ interface Goal {
 
 export default function GoalsPage() {
   const router = useRouter();
-  const { toast } = useToast();
+  const { success, error: showError } = useToastContext();
   const [goals, setGoals] = useState<Goal[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isCreatorOpen, setIsCreatorOpen] = useState(false);
@@ -46,13 +46,9 @@ export default function GoalsPage() {
       if (!response.ok) throw new Error('Failed to fetch goals');
       const data = await response.json();
       setGoals(data);
-    } catch (error) {
-      console.error('Error fetching goals:', error);
-      toast({
-        title: 'Error',
-        description: 'Failed to load goals',
-        variant: 'destructive',
-      });
+    } catch (err) {
+      console.error('Error fetching goals:', err);
+      showError('Failed to load goals');
     } finally {
       setIsLoading(false);
     }
@@ -68,20 +64,12 @@ export default function GoalsPage() {
 
       if (!response.ok) throw new Error('Failed to create goal');
 
-      toast({
-        title: 'Success',
-        description: 'Goal created successfully',
-      });
-
+      success('Goal created successfully');
       fetchGoals();
-    } catch (error) {
-      console.error('Error creating goal:', error);
-      toast({
-        title: 'Error',
-        description: 'Failed to create goal',
-        variant: 'destructive',
-      });
-      throw error;
+    } catch (err) {
+      console.error('Error creating goal:', err);
+      showError('Failed to create goal');
+      throw err;
     }
   };
 
@@ -97,21 +85,13 @@ export default function GoalsPage() {
 
       if (!response.ok) throw new Error('Failed to update goal');
 
-      toast({
-        title: 'Success',
-        description: 'Goal updated successfully',
-      });
-
+      success('Goal updated successfully');
       fetchGoals();
       setEditingGoal(null);
-    } catch (error) {
-      console.error('Error updating goal:', error);
-      toast({
-        title: 'Error',
-        description: 'Failed to update goal',
-        variant: 'destructive',
-      });
-      throw error;
+    } catch (err) {
+      console.error('Error updating goal:', err);
+      showError('Failed to update goal');
+      throw err;
     }
   };
 
@@ -123,19 +103,11 @@ export default function GoalsPage() {
 
       if (!response.ok) throw new Error('Failed to delete goal');
 
-      toast({
-        title: 'Success',
-        description: 'Goal deleted successfully',
-      });
-
+      success('Goal deleted successfully');
       fetchGoals();
-    } catch (error) {
-      console.error('Error deleting goal:', error);
-      toast({
-        title: 'Error',
-        description: 'Failed to delete goal',
-        variant: 'destructive',
-      });
+    } catch (err) {
+      console.error('Error deleting goal:', err);
+      showError('Failed to delete goal');
     }
   };
 
@@ -154,21 +126,13 @@ export default function GoalsPage() {
 
       if (!response.ok) throw new Error('Failed to add contribution');
 
-      toast({
-        title: 'Success',
-        description: 'Contribution added successfully',
-      });
-
+      success('Contribution added successfully');
       fetchGoals();
       setSelectedGoalForContribution(null);
-    } catch (error) {
-      console.error('Error adding contribution:', error);
-      toast({
-        title: 'Error',
-        description: 'Failed to add contribution',
-        variant: 'destructive',
-      });
-      throw error;
+    } catch (err) {
+      console.error('Error adding contribution:', err);
+      showError('Failed to add contribution');
+      throw err;
     }
   };
 

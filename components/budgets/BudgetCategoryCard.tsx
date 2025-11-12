@@ -3,6 +3,8 @@
 import { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
+import { useConfirm } from '@/hooks/useConfirm';
+import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 
 interface BudgetCategoryCardProps {
   id: string;
@@ -23,6 +25,7 @@ export default function BudgetCategoryCard({
   onEdit,
   onDelete,
 }: BudgetCategoryCardProps) {
+  const { confirm, isOpen, options, handleConfirm, handleCancel } = useConfirm();
   const [isDeleting, setIsDeleting] = useState(false);
 
   const percentage = allocatedAmount > 0 ? (spentAmount / allocatedAmount) * 100 : 0;
@@ -30,9 +33,15 @@ export default function BudgetCategoryCard({
   const isOverBudget = spentAmount > allocatedAmount;
 
   const handleDelete = async () => {
-    if (!confirm(`Are you sure you want to delete the "${name}" category?`)) {
-      return;
-    }
+    const confirmed = await confirm({
+      title: 'Delete Category',
+      message: `Are you sure you want to delete the "${name}" category? This action cannot be undone.`,
+      confirmText: 'Delete',
+      cancelText: 'Cancel',
+      variant: 'danger',
+    });
+
+    if (!confirmed) return;
 
     setIsDeleting(true);
     try {
@@ -107,6 +116,17 @@ export default function BudgetCategoryCard({
           </div>
         </div>
       </CardContent>
+
+      <ConfirmDialog
+        isOpen={isOpen}
+        onClose={handleCancel}
+        onConfirm={handleConfirm}
+        title={options.title}
+        message={options.message}
+        confirmText={options.confirmText}
+        cancelText={options.cancelText}
+        variant={options.variant}
+      />
     </Card>
   );
 }

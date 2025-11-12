@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Button from '../ui/Button';
+import { useToastContext } from '@/contexts/ToastContext';
 
 interface CSVImportDialogProps {
   onSuccess: () => void;
@@ -23,6 +24,7 @@ interface CSVRow {
 }
 
 export default function CSVImportDialog({ onSuccess, onCancel }: CSVImportDialogProps) {
+  const { success, error } = useToastContext();
   const [file, setFile] = useState<File | null>(null);
   const [csvData, setCsvData] = useState<CSVRow[]>([]);
   const [columnMapping, setColumnMapping] = useState({
@@ -112,16 +114,17 @@ export default function CSVImportDialog({ onSuccess, onCancel }: CSVImportDialog
         const result = await response.json();
         setImportResult(result);
         if (result.results.failed === 0) {
+          success('Assets imported successfully');
           setTimeout(() => {
             onSuccess();
           }, 2000);
         }
       } else {
-        alert('Failed to import assets');
+        error('Failed to import assets');
       }
-    } catch (error) {
-      console.error('Error importing assets:', error);
-      alert('Failed to import assets');
+    } catch (err) {
+      console.error('Error importing assets:', err);
+      error('Failed to import assets');
     } finally {
       setLoading(false);
     }

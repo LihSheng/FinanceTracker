@@ -2,6 +2,9 @@
 
 import { useState } from 'react';
 import Button from '../ui/Button';
+import { useToastContext } from '@/contexts/ToastContext';
+import { useConfirm } from '@/hooks/useConfirm';
+import { ConfirmDialog } from '../ui/ConfirmDialog';
 
 interface Asset {
   id: string;
@@ -31,12 +34,20 @@ interface AssetCardProps {
 }
 
 export default function AssetCard({ asset, onUpdate }: AssetCardProps) {
+  const { success, error } = useToastContext();
+  const { confirm, isOpen, options, handleConfirm, handleCancel } = useConfirm();
   const [isDeleting, setIsDeleting] = useState(false);
 
   const handleDelete = async () => {
-    if (!confirm('Are you sure you want to delete this asset?')) {
-      return;
-    }
+    const confirmed = await confirm({
+      title: 'Delete Asset',
+      message: 'Are you sure you want to delete this asset? This action cannot be undone.',
+      confirmText: 'Delete',
+      cancelText: 'Cancel',
+      variant: 'danger',
+    });
+
+    if (!confirmed) return;
 
     try {
       setIsDeleting(true);
@@ -45,13 +56,14 @@ export default function AssetCard({ asset, onUpdate }: AssetCardProps) {
       });
 
       if (response.ok) {
+        success('Asset deleted successfully');
         onUpdate();
       } else {
-        alert('Failed to delete asset');
+        error('Failed to delete asset');
       }
-    } catch (error) {
-      console.error('Error deleting asset:', error);
-      alert('Failed to delete asset');
+    } catch (err) {
+      console.error('Error deleting asset:', err);
+      error('Failed to delete asset');
     } finally {
       setIsDeleting(false);
     }
@@ -154,6 +166,17 @@ export default function AssetCard({ asset, onUpdate }: AssetCardProps) {
           Delete
         </Button>
       </div>
+
+      <ConfirmDialog
+        isOpen={isOpen}
+        onClose={handleCancel}
+        onConfirm={handleConfirm}
+        title={options.title}
+        message={options.message}
+        confirmText={options.confirmText}
+        cancelText={options.cancelText}
+        variant={options.variant}
+      />
     </div>
   );
 }

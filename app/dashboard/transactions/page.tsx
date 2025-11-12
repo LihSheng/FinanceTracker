@@ -6,8 +6,10 @@ import TransactionList from '@/components/transactions/TransactionList';
 import TransactionFilters from '@/components/transactions/TransactionFilters';
 import TransactionSummary from '@/components/transactions/TransactionSummary';
 import Button from '@/components/ui/Button';
+import { useToastContext } from '@/contexts/ToastContext';
 
 export default function TransactionsPage() {
+  const { success, error } = useToastContext();
   const [transactions, setTransactions] = useState([]);
   const [summary, setSummary] = useState({
     totalIncome: 0,
@@ -43,8 +45,9 @@ export default function TransactionsPage() {
       const data = await response.json();
       setTransactions(data.transactions);
       setPagination(data.pagination);
-    } catch (error) {
-      console.error('Error fetching transactions:', error);
+    } catch (err) {
+      console.error('Error fetching transactions:', err);
+      error('Failed to load transactions');
     } finally {
       setIsLoading(false);
     }
@@ -58,8 +61,9 @@ export default function TransactionsPage() {
 
       const data = await response.json();
       setSummary(data);
-    } catch (error) {
-      console.error('Error fetching summary:', error);
+    } catch (err) {
+      console.error('Error fetching summary:', err);
+      error('Failed to load summary');
     }
   }, [filters]);
 
@@ -76,8 +80,9 @@ export default function TransactionsPage() {
         }))
       );
       setCategories(allCategories);
-    } catch (error) {
-      console.error('Error fetching categories:', error);
+    } catch (err) {
+      console.error('Error fetching categories:', err);
+      error('Failed to load categories');
     }
   };
 
@@ -117,11 +122,12 @@ export default function TransactionsPage() {
 
       if (!response.ok) throw new Error('Failed to delete transaction');
 
+      success('Transaction deleted successfully');
       fetchTransactions();
       fetchSummary();
-    } catch (error) {
-      console.error('Error deleting transaction:', error);
-      alert('Failed to delete transaction');
+    } catch (err) {
+      console.error('Error deleting transaction:', err);
+      error('Failed to delete transaction');
     }
   };
 

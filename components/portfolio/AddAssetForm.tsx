@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Button from '../ui/Button';
 import Input from '../ui/Input';
+import { useToastContext } from '@/contexts/ToastContext';
 
 interface AddAssetFormProps {
   onSuccess: () => void;
@@ -15,6 +16,7 @@ interface Goal {
 }
 
 export default function AddAssetForm({ onSuccess, onCancel }: AddAssetFormProps) {
+  const { success, error } = useToastContext();
   const [loading, setLoading] = useState(false);
   const [goals, setGoals] = useState<Goal[]>([]);
   const [formData, setFormData] = useState({
@@ -42,8 +44,8 @@ export default function AddAssetForm({ onSuccess, onCancel }: AddAssetFormProps)
         const data = await response.json();
         setGoals(data);
       }
-    } catch (error) {
-      console.error('Error fetching goals:', error);
+    } catch (err) {
+      console.error('Error fetching goals:', err);
     }
   };
 
@@ -67,14 +69,15 @@ export default function AddAssetForm({ onSuccess, onCancel }: AddAssetFormProps)
       });
 
       if (response.ok) {
+        success('Asset added successfully');
         onSuccess();
       } else {
-        const error = await response.json();
-        alert(error.error || 'Failed to add asset');
+        const err = await response.json();
+        error(err.error || 'Failed to add asset');
       }
-    } catch (error) {
-      console.error('Error adding asset:', error);
-      alert('Failed to add asset');
+    } catch (err) {
+      console.error('Error adding asset:', err);
+      error('Failed to add asset');
     } finally {
       setLoading(false);
     }
